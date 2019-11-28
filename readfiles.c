@@ -3,6 +3,9 @@
 #include <string.h>
 #include "readfiles.h"
 #include "solver.h"
+#include "mapa.h"
+#include "arvores.h"
+#include "tendas.h"
 
 
 
@@ -36,7 +39,7 @@ void start_read(FILE *file,char *filename){
 			readB(file,L,C,exit_filename);			
 			break;
 		case 'C':
-			
+			readC(file,L,C,exit_filename);			
 			break;
 		default:
 			write_exit_file(filename,L,C,variante,-1);			
@@ -356,13 +359,15 @@ void readC(FILE *file,int L,int C,char *exit_filename){
 	int N_T_C[C];
 	char strings[L+1]; 
 	int i,j=0;
+	char variante='C';
 	char wS=' ';
 	char emp='.';
 	char tent='T';
 	char arv='A';
 	int **mapa;
-	int NUMA,NUMT=0;
-	//Mapa *map;		POR FAZER
+	int NUMA=0;
+	int NUMT=0;
+	Mapa map;		
 		
 	for(i=0;i<L;i++)		
 		if(fscanf(file,"%d",&N_T_L[i])!=1) return;
@@ -398,8 +403,12 @@ void readC(FILE *file,int L,int C,char *exit_filename){
 		}
 	}
 	
-	//cria_mapa(map,L,C,NUMA,NUMT); POR FAZER
-	//map->matriz_map=mapa;			POR FAZER
-	free(strings);
+	cria_mapa(&map,L,C,NUMA,NUMT,mapa);
+	add_arvores(get_arvores(mapa,NUMA,L,C),&map);
+	add_tendas(get_tendas(mapa,NUMT,L,C),&map);
+	solve_C(exit_filename,variante,N_T_L,N_T_C,L,C,map);
+	free_vec_tendas(map.vec_tendas);
+	free_vec_arvores(map.vec_arvores);
+	free_matriz_map(map.matriz_map,L);
 }
 	

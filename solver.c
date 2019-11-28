@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include "solver.h"
 #include "readfiles.h"
-
+#include "arvores.h"
+#include "tendas.h"
+#include "structs.h"
 
 
 
@@ -132,4 +134,101 @@ void solve_B(char *filename,int L,int C,int l0,int c0,int *linha,int T_adj_tree,
 	write_exit_file_B(filename,L,C,variante,result,l0,c0);	
 }
 	
+void solve_C(char *filename,char variante,int *N_T_L,int *N_T_C,int L,int C,Mapa map){
+	
+	int result=1;
+	int i,j=0;
+	
+	for(i=0;i<map.N_tendas;i++){
+	if(check_tendas_adj(map.matriz_map,map.vec_tendas[i].local.L,map.vec_tendas[i].local.C,L,C)==1){
+			write_exit_file(filename,L,C,variante,result);
+			return;
+		}
+	}
+	
+	
+	for(i=0;i<L;i++){
+		for(j=0;j<C;j++){
+			if(map.matriz_map[i][j]==2){
+				if(check_adj_trees(map.matriz_map,i,j,L,C)==1){
+					 write_exit_file(filename,L,C,variante,result);
+					 return;
+				 }
+			}
+		}
+	}
+	
+	if(check_tendas_C(map.matriz_map,L,C,N_T_L,N_T_C)==1){
+		write_exit_file(filename,L,C,variante,result);
+		return;
+	}
+	
+
+	if(mandatoryalgo(map,L,C)){
+		write_exit_file(filename,L,C,variante,0);
+		return;
+	}	
+	result=0;
+	if(backtrackingalgo(map)){
+		write_exit_file(filename,L,C,variante,result);
+		return;
+	}
+	
+	
+	result=1;
+	
+	write_exit_file(filename,L,C,variante,result);
+	
+	
+	
+	
+}
+
+bool backtrackingalgo(Mapa map){
+	
+	int i=0;
+	int aux;
+	
+	
+	if(alldone(map.vec_tendas,map.N_tendas)){
+		 return true; //all done
+	 }
+	
+	aux=findunassoc(map.vec_tendas,map.N_tendas);
+	for(i=0;i<map.N_arvores;i++){
+		if(check_is_possible(map.vec_tendas[aux],map.vec_arvores[i])){ //O problem está aqui!!!!!!!!!!!!!!!!!!!!!!!!!
+			associa_TA(&map.vec_arvores[i],&map.vec_tendas[aux]);
+			if(backtrackingalgo(map)) return true;
+			deassocia_TA(&map.vec_arvores[i],&map.vec_tendas[aux]); 
+		}
+	}	
+	return false;
+}
+
+
+bool mandatoryalgo(Mapa map,int L,int C){
+	
+	int i,j=0;
+	int stop=0;
+	
+	while(stop!=1){
+		stop=1;
+		for(i=0;i<map.N_tendas;i++){		
+			if(check_adj_trees_number(map.matriz_map,map.vec_tendas[i].local.L,map.vec_tendas[i].local.C,L,C,map)==1){
+				for(j=0;j<map.N_arvores;j++){
+					if(check_is_possible(map.vec_tendas[i],map.vec_arvores[j])){
+						associa_TA(&map.vec_arvores[j],&map.vec_tendas[i]);
+						stop=0;
+					}
+				}
+			}
+		}
+	}
+	
+	if(alldone(map.vec_tendas,map.N_tendas)) return true;
+	
+	
+	return false;
+	
+}
 
