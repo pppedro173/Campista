@@ -78,7 +78,7 @@ int check_l0co(int l0,int c0,int L,int C){
 }
 
 /******************************************************************************
-* aolve_B()
+* solve_B()
 *
 * Arguments: file - filename to write data to.
 * 			l0 - coord l0
@@ -133,6 +133,28 @@ void solve_B(char *filename,int L,int C,int l0,int c0,int *linha,int T_adj_tree,
 	result=0;
 	write_exit_file_B(filename,L,C,variante,result,l0,c0);	
 }
+
+
+/******************************************************************************
+* solve_C()
+*
+* Arguments: filename - file pointer to write data to.
+* 			variante - C (because changing code is to much work sometimes)
+* 			N_T_L - Number of tents in each line (vector)
+* 			N_T_C - Number of tents in each column (vector)
+* 			L - number of lines in the map
+* 			C - number of columns in the map
+* 			map - map structure
+* 			
+*     
+* Returns: (void)
+* Side-Effects: Solves a problem of var C. 
+*
+* Description: Evaluates a map according to the restritions of var. C.
+*****************************************************************************/
+
+
+
 	
 void solve_C(char *filename,char variante,int *N_T_L,int *N_T_C,int L,int C,Mapa map){
 	
@@ -184,6 +206,21 @@ void solve_C(char *filename,char variante,int *N_T_L,int *N_T_C,int L,int C,Mapa
 	
 }
 
+/******************************************************************************
+* backtrackingalgo()
+*
+* Arguments: map - map structure ( with all the map informations)
+
+* 			
+*     
+* Returns: (bool)
+* Side-Effects: Returns true if all tents are associated with their tree 
+* 				and false if there isn't a config which allow for each tent
+* 				to have it's own tree. 
+*
+* Description: Attempts to associate each tent whith a tree
+*****************************************************************************/
+
 bool backtrackingalgo(Mapa map){
 	
 	int i=0;
@@ -205,6 +242,23 @@ bool backtrackingalgo(Mapa map){
 	return false;
 }
 
+/******************************************************************************
+* mandatorylgo()
+*
+* Arguments: map - map structure ( with all the map informations)
+* 			L - number of lines
+* 			C - number o columns
+
+* 			
+*     
+* Returns: (bool)
+* Side-Effects: Returns true if all tents are associated with their tree 
+* 				and false if there there if detects a tent without a tree 
+* 				associated
+*
+* Description: Takes care o "mandatory" tent-tree associatians (eg. tents which 
+* 				only have 1 tree available for association due to the map config).
+*****************************************************************************/
 
 bool mandatoryalgo(Mapa map,int L,int C){
 	

@@ -4,6 +4,20 @@
 #include "tendas.h"
 #include "structs.h"
 
+/******************************************************************************
+* cria_tenda()
+*
+* Arguments: tenda - A pointer to a tent structure
+* 			 L - Number of lines
+* 			 C -  Number of columns
+*     
+* Returns: (void)
+* Side-Effects: Instanciates a tent structure
+*
+* Description: Initializes a tent 
+* 
+*****************************************************************************/
+
 void cria_tenda(Tenda *tenda, int C, int L){
 	
 	tenda->local.C = C;
@@ -11,6 +25,21 @@ void cria_tenda(Tenda *tenda, int C, int L){
 	tenda->isassoc =0;
 	
 }
+
+/******************************************************************************
+* get_tendas()
+*
+* Arguments: matriz_map - a matrix whith the map
+* 			 N_tendas - Total Number of tents in the map
+* 			 L - Number of lines
+* 			 C -  Number of columns
+*     
+* Returns: (Tenda *)
+* Side-Effects: Creates a vector of tents whith all the tents in the map
+*
+* Description: Initializes a vector of tents
+* 
+*****************************************************************************/
 
 Tenda *get_tendas(int **matriz_map,int N_tendas,int L,int C){
 	
@@ -31,13 +60,43 @@ Tenda *get_tendas(int **matriz_map,int N_tendas,int L,int C){
 	return aux;
 }
 
+/******************************************************************************
+* free_vec_tendas()
+*
+* Arguments: vec - A vector of tents
+*     
+* Returns: (void)
+* Side-Effects: frees alocated memory
+*
+* Description: frees a vector of tents
+* 
+*****************************************************************************/
+
 
 void free_vec_tendas(Tenda *vec){
 	
 	free(vec);
 }
 
-
+/******************************************************************************
+* check_T_LC()
+*
+* Arguments: mat - A matrix whith the map
+* 			 l0 - Coordinate "y" of a point in the map
+* 			 c0 - Coordinate "x" of a point in the map
+* 			 N_T_L - A vector whith the number of tents per line
+* 			 N_T_C - A vector whith the number of tents per column
+* 			 L - Number of lines
+* 			 C - Number of columns
+*     
+* Returns: (int)
+* Side-Effects: Returns 1 if a point cannot have a tent due to the number 
+* 				of tents in a respective a line or column. Returns 0 otherwise
+*
+* Description: Returns 1 if a point cannot have a tent due to the number 
+* 			 of tents in a respective a line or column. Returns 0 otherwise 
+* 
+*****************************************************************************/
 
 int check_T_LC(int **map,int l0,int c0,int *N_T_L,int *N_T_C,int L,int C){
 	int i=0;
@@ -62,19 +121,60 @@ int check_T_LC(int **map,int l0,int c0,int *N_T_L,int *N_T_C,int L,int C){
 	
 	return 1;
 }
-	
+
+/******************************************************************************
+* associa_TA()
+*
+* Arguments: A - A tree
+* 			 B - A tent
+*     
+* Returns: (void)
+* Side-Effects: Associates a tree and a tent
+*
+* Description: Associates a tree and a tent 
+* 
+*****************************************************************************/	
 	
 void associa_TA(Arvore *A,Tenda *B){	
 	B->isassoc=1;
 	A->isassoc=1;	
 }	
 
+/******************************************************************************
+* deassocia_TA()
+*
+* Arguments: A - A tree
+* 			 B - A tent
+*     
+* Returns: (void)
+* Side-Effects: Deassociates a tree and a tent
+*
+* Description: Deassociates a tree and a tent 
+* 
+*****************************************************************************/	
 
 void deassocia_TA(Arvore *A,Tenda *B){	
 	B->isassoc=0;
 	A->isassoc=0;	
 }
-	
+
+/******************************************************************************
+* check_tendas_C()
+*
+* Arguments: mat - A matrix whith the map
+* 			 N_T_L - A vector whith the number of tents per line
+* 			 N_T_C - A vector whith the number of tents per column
+* 			 L - Number of lines
+* 			 C - Number of columns
+*     
+* Returns: (int)
+* Side-Effects: Returns 1 if a point cannot have a tent due to the number 
+* 				of tents in a respective a line or column. Returns 0 otherwise
+*
+* Description: Returns 1 if a point cannot have a tent due to the number 
+* 			 of tents in a respective a line or column. Returns 0 otherwise 
+* 
+*****************************************************************************/	
 	
 int check_tendas_C(int **mat,int L,int C,int *N_T_L,int *N_T_C){
 	
@@ -103,6 +203,19 @@ int check_tendas_C(int **mat,int L,int C,int *N_T_L,int *N_T_C){
 	return 0; //não viola restrição
 }
 			
+/******************************************************************************
+* alldone()
+*
+* Arguments: vec - A vector whith all the tents in the map
+* 			 N_tendas -  The lenght of that vector
+*     
+* Returns: (bool)
+* Side-Effects: Returns true or false
+*
+* Description: Returns true if all tents are associated whith a tree and false
+* 			   otherwise 
+* 
+*****************************************************************************/
 		
 bool alldone(Tenda *vec,int N_tendas){
 	
@@ -115,7 +228,19 @@ bool alldone(Tenda *vec,int N_tendas){
 	return true;
 	
 }
-		
+
+/******************************************************************************
+* findunassoc()
+*
+* Arguments: vec - A vector whith all the tents in the map
+* 			 N_tendas -  The lenght of that vector
+*     
+* Returns: (int)
+* Side-Effects: Returns an integer
+*
+* Description: Returns the possition on the vector of a tent not associated yet 
+* 
+*****************************************************************************/		
 		
 int findunassoc(Tenda *vec,int N_tendas){
 	
@@ -126,7 +251,25 @@ int findunassoc(Tenda *vec,int N_tendas){
 	}	
 	
 	return -1;
-}	
+}
+
+/******************************************************************************
+* check_tendas_adj()
+*
+* Arguments: mat - A matrix whith the map
+* 			 l0 - Coordinate "y" of a point in the map
+* 			 c0 - Coordinate "x" of a point in the map
+* 			 L - Number of lines
+* 			 C - Number of columns
+*     
+* Returns: (int)
+* Side-Effects: Checks if a point has adjacent tents
+*
+* Description: Checks if a point has adjacent tents, has soon has it finds 
+* 				evidence of that returns 1, if it doesn't find an adjacent
+* 				tent returns 0.
+* 
+*****************************************************************************/	
 		
 int check_tendas_adj(int **mat,int l0,int c0,int L,int C){
 	
