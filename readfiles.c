@@ -359,7 +359,7 @@ void readC(FILE *file,int L,int C,char *exit_filename){
 	int N_T_C[C];
 	char strings[L+1]; 
 	int i,j=0;
-	char variante='C';
+	//char variante='C';
 	char wS=' ';
 	char emp='.';
 	char tent='T';
@@ -403,12 +403,114 @@ void readC(FILE *file,int L,int C,char *exit_filename){
 		}
 	}
 	
-	cria_mapa(&map,L,C,NUMA,NUMT,mapa);
+	cria_mapa(&map,L,C,NUMA,NUMT,mapa,N_T_L,N_T_C);
 	add_arvores(get_arvores(mapa,NUMA,L,C),&map);
 	add_tendas(get_tendas(mapa,NUMT,L,C),&map);
-	solve_C(exit_filename,variante,N_T_L,N_T_C,L,C,map);
+	//solve_C(exit_filename,variante,N_T_L,N_T_C,L,C,map);
 	free_vec_tendas(map.vec_tendas);
 	free_vec_arvores(map.vec_arvores);
 	free_matriz_map(map.matriz_map,L);
 }
+
+
+void start_readfinal (FILE *file,char *filename){
+
+	int L,C=0;
+	
+	while(1){		
+		if(fscanf(file,"%d %d ",&L,&C)!=2) return; // read #lines and # columns
+		read(file,L,C,filename);
+	}	
+}	
+
+void read (FILE *file,int L,int C,char *filename){
+	
+	char *exit_filename = create_file(filename);
+	int N_T_L[L];
+	int N_T_C[C];
+	int i,j=0;
+	char strings[L+1];
+	char wS=' ';
+	char emp='.';
+	char tent='T';
+	char arv='A';
+	int **mapa;
+	int NUMA=0;
+	int NUMT=0;
+	Mapa map;
+	
+	
+	for(i=0;i<L;i++){		
+		if(fscanf(file,"%d",&N_T_L[i])!=1) return;
+		NUMT=NUMT+N_T_L[i];
+	}
+		
+	for(i=0;i<C;i++)
+		if(fscanf(file,"%d",&N_T_C[i])!=1) return;
+		
+	mapa=malloc(L*sizeof(int*));     
+	for(i=0;i<L;i++){
+		mapa[i]=malloc(C*sizeof(int));
+	}
+		
+	for(i=0;i<L;i++){
+		for(j=0;j<C;j++){
+			if(fscanf(file,"%c",&strings[i])!=1) return;
+			if(strings[i]==arv){
+				mapa[i][j]=1;
+				NUMA=NUMA+1;
+			}
+			if(strings[i]==emp){
+				mapa[i][j]=0;
+			}				
+			if(strings[i]==tent){
+				mapa[i][j]=2;
+				NUMT=NUMT+1;
+			}			
+			
+			if(strings[i]==wS || strings[i]=='\n'){
+				j--;
+			}
+		}
+	}
+	
+	cria_mapa(&map,L,C,NUMA,NUMT,mapa,N_T_L,N_T_C);
+
+	add_freeps(&map);
+	//print_map(map.matriz_map,L,C);
+	backtrackingalgo2(map);
+	//print_map(map.matriz_map,L,C);
+
+	add_arvores(get_arvores(mapa,NUMA,L,C),&map);
+	add_tendas(get_tendas(mapa,NUMT,L,C),&map);
+	solve_C(exit_filename,N_T_L,N_T_C,L,C,map);
+	free_vec_tendas(map.vec_tendas);
+	free_vec_arvores(map.vec_arvores);
+	free_matriz_map(map.matriz_map,L);	
+		
+}
+	
+
+void write_exit_file_final(char *filename,Mapa map,int result){
+	int i,j=0;
+	FILE *aux_file=fopen(filename,"a");
+	
+	if(result==1) result=-1;
+	if(result==0) result=1;
+	
+	
+	fprintf(aux_file,"%d %d %d %s",map.L,map.C,result,"\n");
+
+	for(i=0;i<map.L;i++){
+		for(j=0;j<map.C;j++){
+			if(map.matriz_map[i][j]==0)fprintf(aux_file,"%s",".");
+			if(map.matriz_map[i][j]==1)fprintf(aux_file,"%s","A");
+			if(map.matriz_map[i][j]==2)fprintf(aux_file,"%s","T");
+		}
+		fprintf(aux_file,"%s","\n");
+	}
+	fprintf(aux_file,"%s","\n");
+	fclose(aux_file);
+}
+
 	

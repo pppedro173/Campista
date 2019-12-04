@@ -23,11 +23,28 @@
 * 
 *****************************************************************************/
 
-void cria_mapa(Mapa* map, int L ,int C,int N_arvores,int N_tendas,int **matriz_map){
-		
+void cria_mapa(Mapa* map, int L ,int C,int N_arvores,int N_tendas,int **matriz_map,int *N_T_L,int *N_T_C){
+	
+	int i=0;
+	
+	map->L=L;
+	map->C=C;
+	map->N_T_L=N_T_L;
+	map->N_T_C=N_T_C;	
 	map->N_arvores=N_arvores;
 	map->N_tendas=N_tendas;
-	map->matriz_map=matriz_map;			
+	map->matriz_map=matriz_map;	
+	map->N_freeps=(L*C)-(N_arvores);
+	map->N_T_L_curr=malloc(sizeof(int)*L);
+	map->N_T_C_curr=malloc(sizeof(int)*C);
+	
+	for(i=0;i<L;i++)
+		map->N_T_L_curr[i]=0;
+		
+	for(i=0;i<C;i++)
+		map->N_T_C_curr[i]=0;
+	
+			
 }
 
 /******************************************************************************
@@ -149,3 +166,46 @@ void print_map(int **mat,int L,int C){
 	}
 }
 
+int find_free_p (Mapa map){
+	
+	int i=0;
+	
+	for(i=0;i<map.N_freeps;i++)
+		if(map.vec_freeps[i].ischecked==0) return i;
+	
+	printf("GONE WRONG %d \n",i);
+	exit(0);
+		
+	return 0;
+}
+		
+	
+void add_freeps(Mapa *map){
+	
+	int i,j,counter=0;
+	
+	Freep *vec_freeps=malloc(sizeof(Freep)*map->N_freeps);
+	
+	for(i=0;i<map->L;i++){
+		for(j=0;j<map->C;j++){
+			if(map->matriz_map[i][j]==0){
+				vec_freeps[counter].local.L=i;
+				vec_freeps[counter].local.C=j;
+				vec_freeps[counter].ischecked=0;
+				counter++;
+			}
+		}
+	}
+	
+	map->vec_freeps=vec_freeps;
+}
+					
+void checks_freeps(Freep *freepoint){
+	
+	freepoint->ischecked=1;
+}
+
+void unchecks_freeps(Freep *freepoint){
+	freepoint->ischecked=0;
+}
+	

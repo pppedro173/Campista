@@ -12,7 +12,9 @@ int main(int argc,char *argv[]){
 	file=fopen(argv[1],"r"); // Opens file in read mode
 	if(!file)exit(0);       
 	
-	start_read(file,argv[1]);
+	//start_read(file,argv[1]);
+	
+	start_readfinal(file,argv[1]);
 	
 	fclose(file);
 	

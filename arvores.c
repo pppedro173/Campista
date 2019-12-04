@@ -225,3 +225,11 @@ bool check_is_possible(Tenda tent,Arvore tree){
 	
 	
 }
+
+
+bool check_is_tree(int **matriz_map,int l0,int c0){
+	
+	if(matriz_map[l0][c0]==1) return true;
+	
+	return false;
+}

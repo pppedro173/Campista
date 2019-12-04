@@ -20,4 +20,6 @@ Arvore get_arvore (Arvore *vec,int linhas,int coluna,int N_arvores);
 
 bool check_is_possible(Tenda tent,Arvore tree);
 
+bool check_is_tree(int **matriz_map,int l0,int c0);
+
 #endif    /* __arvores__ */

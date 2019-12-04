@@ -4,6 +4,7 @@
 #include "readfiles.h"
 #include "arvores.h"
 #include "tendas.h"
+#include "mapa.h"
 #include "structs.h"
 
 
@@ -156,14 +157,14 @@ void solve_B(char *filename,int L,int C,int l0,int c0,int *linha,int T_adj_tree,
 
 
 	
-void solve_C(char *filename,char variante,int *N_T_L,int *N_T_C,int L,int C,Mapa map){
+void solve_C(char *filename,int *N_T_L,int *N_T_C,int L,int C,Mapa map){
 	
 	int result=1;
 	int i,j=0;
 	
 	for(i=0;i<map.N_tendas;i++){
 	if(check_tendas_adj(map.matriz_map,map.vec_tendas[i].local.L,map.vec_tendas[i].local.C,L,C)==1){
-			write_exit_file(filename,L,C,variante,result);
+			write_exit_file_final(filename,map,result);
 			return;
 		}
 	}
@@ -173,7 +174,7 @@ void solve_C(char *filename,char variante,int *N_T_L,int *N_T_C,int L,int C,Mapa
 		for(j=0;j<C;j++){
 			if(map.matriz_map[i][j]==2){
 				if(check_adj_trees(map.matriz_map,i,j,L,C)==1){
-					 write_exit_file(filename,L,C,variante,result);
+					 write_exit_file_final(filename,map,result);
 					 return;
 				 }
 			}
@@ -181,25 +182,25 @@ void solve_C(char *filename,char variante,int *N_T_L,int *N_T_C,int L,int C,Mapa
 	}
 	
 	if(check_tendas_C(map.matriz_map,L,C,N_T_L,N_T_C)==1){
-		write_exit_file(filename,L,C,variante,result);
+		write_exit_file_final(filename,map,result);
 		return;
 	}
 	
 
 	if(mandatoryalgo(map,L,C)){
-		write_exit_file(filename,L,C,variante,0);
+		write_exit_file_final(filename,map,0);
 		return;
 	}	
 	result=0;
 	if(backtrackingalgo(map)){
-		write_exit_file(filename,L,C,variante,result);
+		write_exit_file_final(filename,map,result);
 		return;
 	}
 	
 	
 	result=1;
 	
-	write_exit_file(filename,L,C,variante,result);
+	write_exit_file_final(filename,map,result);
 	
 	
 	
@@ -285,4 +286,41 @@ bool mandatoryalgo(Mapa map,int L,int C){
 	return false;
 	
 }
+
+bool backtrackingalgo2(Mapa map){
+	
+	
+	//int delete=0;
+	int i=0;
+
+	if(alldone2(map)){
+		 return true; //all done
+	 }
+	
+	//aux=find_free_p(map);
+	//printf("matriz_map[%d][%d]=%d and aux.L=%d , aux.C=%d \n",map.vec_freeps[aux].local.L,map.vec_freeps[aux].local.C,map.matriz_map[map.vec_freeps[aux].local.L][map.vec_freeps[aux].local.C],map.vec_freeps[aux].local.L,map.vec_freeps[aux].local.C);
+	for(i=0;i<map.N_freeps;i++){
+		if(is_safe(map,map.vec_freeps[i].local.L,map.vec_freeps[i].local.C) && map.vec_freeps[i].ischecked==0){
+			//printf("is going to put tent in line=%d col=%d \n",map.vec_freeps[i].local.L,map.vec_freeps[i].local.C);
+			put_tent(&map,map.vec_freeps[i].local.L,map.vec_freeps[i].local.C);
+			checks_freeps(&map.vec_freeps[i]);
+			//printf("*********************\n");
+			//print_map(map.matriz_map,map.L,map.C);
+			//printf("*********************\n");
+			//scanf("%d",&delete);
+			if(backtrackingalgo2(map)) return true;
+			takes_tent(&map,map.vec_freeps[i].local.L,map.vec_freeps[i].local.C);
+			unchecks_freeps(&map.vec_freeps[i]);
+		}
+	}
+			
+	return false;
+}
+
+
+
+
+
+
+
 

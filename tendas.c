@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "tendas.h"
+#include "arvores.h"
 #include "structs.h"
 
 /******************************************************************************
@@ -310,4 +311,71 @@ int check_tendas_adj(int **mat,int l0,int c0,int L,int C){
 }
 	
 	
+bool alldone2(Mapa map){
+	int i,j,counter=0;
 	
+	for(i=0;i<map.L;i++){
+		for(j=0;j<map.C;j++){
+			if(map.matriz_map[i][j]==2) counter++;
+		}
+	}
+	if(counter==map.N_tendas) return true;
+	
+	return false;
+	
+}
+
+bool check_is_tent(int **matriz_map,int l0,int c0){
+	
+	if(matriz_map[l0][c0]==2) return true;
+	
+	return false;
+}
+
+
+bool check_N_T_L(int *N_T_L,int *N_T_L_curr,int line){
+	
+	if(N_T_L_curr[line]+1 > N_T_L[line]) return true;
+	
+	return false;
+}
+
+bool check_N_T_C(int *N_T_C,int *N_T_C_curr,int col){
+	
+	if(N_T_C_curr[col]+1 > N_T_C[col]) return true;
+	
+	return false;
+}	
+
+bool is_safe(Mapa map,int line,int col){
+	if(check_is_tree(map.matriz_map,line,col)) return false;
+	//printf("A\n");
+	if(check_is_tent(map.matriz_map,line,col)) return false;
+	//printf("b\n");
+	if(check_adj_trees(map.matriz_map,line,col,map.L,map.C)!=0) return false;
+	//printf("c\n");
+	if(check_tendas_adj(map.matriz_map,line,col,map.L,map.C)==1) return false;
+	//printf("d\n");
+	if(check_N_T_L(map.N_T_L,map.N_T_L_curr,line)) return false;
+	//printf("e\n");
+	if(check_N_T_C(map.N_T_C,map.N_T_C_curr,col)) return false;
+	//printf("f\n");
+	return true;
+	
+}
+
+
+void put_tent(Mapa *map,int line,int col){
+	//printf("puts tent in line = %d e col =%d \n",line,col);
+	map->matriz_map[line][col]=2;
+	map->N_T_L_curr[line]=map->N_T_L_curr[line]+1;
+	map->N_T_C_curr[col]=map->N_T_C_curr[col]+1;
+	
+}
+	
+void takes_tent(Mapa *map,int line,int col){
+	
+	map->matriz_map[line][col]=0;
+	map->N_T_L_curr[line]=map->N_T_L_curr[line]-1;
+	map->N_T_C_curr[col]=map->N_T_C_curr[col]-1;
+}	

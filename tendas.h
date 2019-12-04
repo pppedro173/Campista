@@ -26,6 +26,16 @@ int findunassoc(Tenda *vec,int N_tendas);
 
 int check_tendas_adj(int **mat,int l0,int c0,int L,int C);
 
+bool alldone2(Mapa map);
 
+bool check_is_tent(int **matriz_map,int l0,int c0);
+
+bool check_N_T_L (int *N_T_L,int *N_T_L_curr,int line);
+
+bool is_safe(Mapa map,int line,int col);
+
+void put_tent(Mapa *map,int line,int col);
+
+void takes_tent(Mapa *map,int line,int col);
 
 #endif    /* __tendas__ */
